@@ -1,11 +1,12 @@
-# **WArestlemania:** Match Predictor
+# **Wrestlemania:** Match Predictor
 
 ### Developed by:
 > Gordon Daffurn 0801676d@student.gla.ac.uk
-Lyle Simpson 2286274k@student.gla.ac.uk
+
+> Lyle Simpson 
 
 #### Host URLs
-* PythonAnywhere URL: http://f5f.pythonanywhere.com/
+* PythonAnywhere URL: ---
 ---
 #### IMPORTANT INFORMATION
 
