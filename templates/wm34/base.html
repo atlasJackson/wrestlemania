@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<!--
+     Base template which is extended by most other templates.
+     Defines all inlcuded css/javascript files.
+     Navigation bar, body and footer are defined in the base.
+-->
+
+<html>
+    <head lang="en">
+        <meta charset = "UTF-8" />
+        <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}" />
+        <script src="{% static 'js/main.js' %}" ></script>
+        <!-- Third party css -->
+        <link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+        <!--     <link rel="stylesheet" type="text/css" href="{% static 'css/tablesorter.css' %}">
+    Favicon to display in the browser's tab for this website. 
+        <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.ico' %}"/>
+-->
+        <title>
+            Wrestling ScoreCards |
+            {% block title_block %}
+                Predict Wrestling Results
+            {% endblock %}
+        </title>
+    </head>
+
+    <body>
+        <!-- Makes use of bootstrap's navbar classes. -->
+        <div id="primary-nav">
+            <div class="container center-content">
+                <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+                    <a class="navbar-brand" href="{% url 'index' %}">
+                            <img src="{% static 'img/logo.png' %}" alt="wm34 logo" height="50px">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+
+
+                    <!-- Get url in the request to set the matching link's css class to active -->
+                    {% with request.resolver_match.url_name as urlName %}
+                    <div class="collapse navbar-collapse" id="navbarText">
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item {% if urlName == 'index' %}active{% endif %}"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
+                            <<li class="nav-item {% if urlName == 'about' %}active{% endif %}"><a class="nav-link" href="{% url 'about' %}">About us</a></li>
+                        </ul>
+
+                        <div class="link-account" id="login-account">
+                            {% if user.is_authenticated %}
+                                <a class="{% if urlName == 'user_account' or urlName == 'edit_account' or urlName == 'change_password' %}{% if user.player == player %}active{% endif %}{% endif %}" href="{% url 'user_account' user.username %}">{{ user.username }}</a>&nbsp;|&nbsp;<a class="account-a" href="{% url 'logout' %}?next=/fives/">Logout</a>
+                            {% else %}
+                                <a href="{% url 'login' %}">Login</a>&nbsp;|&nbsp;<a class="account-a" href="#">Sign up</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endwith %}
+                </nav>
+            </div>
+        </div>
+
+        <div class="container" id="body-content">
+                {% block body_block %}
+                {% endblock %}
+        </div>
+
+        <footer class="footer fixed-bottom bg-dark">
+            <div class="container text-center">
+                <p class="footer-p-custom">
+                    Gordon Daffurn&nbsp;&nbsp;|&nbsp;&nbsp;Lyle SImpson<br/>
+                    Wrestling ScoreCards &copy; 2018
+                </p>
+            </div>
+        </footer>
+
+        <!-- Third party scripts -->
+        <script type="text/javascript" src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+        <!-- Custom javascript --> 
+        <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+    </body>
+</html>
