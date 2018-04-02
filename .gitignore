@@ -13,6 +13,3 @@ __ pycache __
 htmlcov
 .coverage
 
-# Ignore api key
-api_google.txt
-
