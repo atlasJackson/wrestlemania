@@ -19,18 +19,13 @@ class UserProfile(models.Model):
 class Event(models.Model):    
     name = models.CharField(max_length=128)
     date = models.DateTimeField(default=None)
+
     user = models.ManyToManyField(User, through="UserEvent")
-
-
-class UserEvent(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    points = IntegerField(default=0)
 
 
 class Match(models.Model):
 
-    event = models.ForeignKey(Event)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
 
     # Game types take the following values in order to reference integer field:
     SINGLE = 1
@@ -45,15 +40,13 @@ class Match(models.Model):
     MATCH_CHOICES = (
         (SINGLE, "Singles"),
         (TAG, "Tag Team"),
-        (TRIPLE< "Triple Threat"),
+        (TRIPLE, "Triple Threat"),
         (FOUR, "Fatal Four-way"),
         (TRIPLE_TAG, "Triple Threat Tag Team"),
         (ROYALE, "Battle Royale"),
         (LADDER, "Ladder"),
         (TABLE, "Tables"),
     )
-
-    elimination = models.BooleanField(default=False)
     match_type = models.IntegerField(choices=MATCH_CHOICES, default=SINGLE)
 
 
@@ -61,3 +54,66 @@ class Wrestler(models.Model):
     name = models.CharField(max_length=128)
     match = models.ManyToManyField(Match)
 
+
+class UserEvent(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    points = models.IntegerField(default=0)
+
+
+class UserMatchAnswers(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    match = models.ForeignKey(Match, on_delete=models.CASCADE)
+
+    ###########################################################
+    ### FOR ALL MATCH TYPES
+    # Winner of the match - 5 points.
+    winner = models.CharField(max_length=128)
+    
+    ## If method is determined by match-type, then gimmick is used instead - 2 points.
+    # Method of victory.
+    METHOD_CHOICES = (
+        (1, "Pin"),
+        (2, "Submission"),
+        (3, "Disqualification"),
+    )
+    method = models.IntegerField(choices=METHOD_CHOICES, default=1)
+    # Gimmick match (ladder, steel cage, etc.) - selects wrestler who does first ... of the match.
+    gimmick = models.CharField(max_length=128)
+    
+    # Duration of match, categorised - 2 points.
+    DURATION_CHOICES = (
+        (1, "0 - 4:59"),
+        (2, "5 - 9:59"),
+        (3, "10 - 14:59"),
+        (4, "15 - 19:59"),
+        (5, "20 - 24:59"),
+        (6, "25 - 29:59"),
+        (7, "30+"),
+    )
+    duration = models.IntegerField(choices=DURATION_CHOICES, default=1)
+
+    # Interference in the match? 1 point.
+    interference = models.BooleanField(default=False)
+
+
+    ###########################################################
+    ### MATCH-TYPE SPECIFIC - Only fill one block per match
+    
+    ## Normal match.
+    finishers = models.IntegerField(default=0) # 2 points
+    table_used = models.BooleanField(default=False) # 1 points
+    injury = models.BooleanField(default=False) # 1 points
+    ref_comatose = models.BooleanField(default=False) # 1 points
+
+    ## Multi-man/tag-team matches.
+    who_pins = models.CharField(max_length=128) # 2 points
+    who_pinned = models.CharField(max_length=128) # 2 points
+    heel_turn = models.BooleanField(default=False) # 1 points    
+
+    ## Battle Royale
+    first_out = models.CharField(max_length=128) # 1 point
+    final_four_one = models.CharField(max_length=128) # 1 point
+    final_four_two = models.CharField(max_length=128) # 1 point
+    final_four_three = models.CharField(max_length=128) # 1 point
+    final_four_four = models.CharField(max_length=128) # 1 point
