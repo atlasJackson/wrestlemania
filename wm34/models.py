@@ -32,7 +32,7 @@ class Match(models.Model):
     TAG = 2
     TRIPLE = 3
     FOUR = 4
-    TRIPLE_TAG = -5
+    TRIPLE_TAG = 5
     ROYALE = 6
     LADDER = 7
     TABLE = 8
