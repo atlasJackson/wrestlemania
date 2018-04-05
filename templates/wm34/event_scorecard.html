@@ -1,0 +1,35 @@
+{% extends 'wm34/base.html' %}
+{% load staticfiles %}
+<!--
+     Template to create a new game.
+-->
+
+{% block title_block %}
+    {{ request.user }}'s {{ event.name }} Scorecard 
+{% endblock %}
+
+{% block body_block %}
+    <form method="post" action="{% url 'event_scorecard' event.event_slug %}">
+        {% csrf_token %}
+        {% for match in matches %}
+            {% if match.name %}
+                {{ match.name }} <br />
+            {% endif %}
+            {% if match.team %}
+                {% for team in match.team.all %} 
+                    {{ team.name }}
+                {% endfor %}
+            {% else %}
+                {% for wrestler in match.wrestler.all %} 
+                    {{ wrestler.name }}
+                {% endfor %}
+            {% endif %} <br /><br />
+
+            {% for field in scorecard %}
+                {{ field.label }} {{ field }}
+            {% endfor %}
+
+        {% endfor %}
+        <input class="btn btn-lg btn-primary btn-block" id="create-game" type="submit" name="submit" value="Create Game" />
+    </form>
+{% endblock %}

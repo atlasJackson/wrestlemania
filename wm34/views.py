@@ -6,18 +6,18 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 
 from django.contrib.auth.decorators import login_required
 
-from wm34.models import User
-from wm34.forms import UserForm, UserProfileForm
+from wm34.models import User, Event, Match
+from wm34.forms import UserForm, UserProfileForm, UserMatchAnswersForm
 
 def index(request):
-    context_dict = {}
+    events = Event.objects.order_by('event_slug')[:10]
+    context_dict = {'events': events}
     return render(request,'wm34/index.html', context=context_dict)
 
 
 def about(request):
     context_dict = {}
     return render(request, 'wm34/about.html', context=context_dict)
-
 
 
 ###############################################
@@ -107,3 +107,74 @@ def user_logout(request):
     # Since we know the user is logged in, we can now just log them out.
     logout(request)
     return HttpResponseRedirect(reverse('index'))
+
+
+###############################################
+# Sort following into sections
+###############################################
+
+def show_event(request, event):
+
+    try:
+        # Get event with given slug.
+        event = getEvent(event)
+        matches = getMatches(event)
+        context_dict = {'event': event, 'matches': matches}
+
+    except Event.DoesNotExist:
+        context_dict = {'event': None, 'matches': None}
+        
+    return render(request, 'wm34/show_event.html', context=context_dict)
+
+
+@login_required
+def event_scorecard(request, event):
+
+    scorecard = UserMatchAnswersForm()
+
+    try:
+        # Get event with given slug.
+        event = getEvent(event)
+        matches = getMatches(event)
+        context_dict = {'event': event, 'matches': matches}
+
+    except Event.DoesNotExist:
+        context_dict = {'event': None, 'matches': None}
+
+    # An HTTP POST?
+    if request.method == 'POST':
+        scorecard = UserMatchAnswersForm(request.POST)
+
+        # Have we been provided with a valid form?
+        if scorecard.is_valid():
+            # Save, but don't commit
+            match_answers = scorecard.save(commit=False)
+
+            # Get user entry from current user
+            match_answers.user = request.user
+
+            # Save the new UserMatchAnswers to the database
+            scorecard.save()
+
+            # Direct the user to the relevant event page.
+            return HttpResponseRedirect(reverse('show_event', kwargs={'event':event}))
+
+        else:
+            # The supplied form contained errors - print them to the terminal.
+            print(scorecard.errors)
+
+    context_dict['scorecard'] = scorecard
+    return render(request, 'wm34/event_scorecard.html', context=context_dict)
+
+
+###############################################
+# Helper functions
+###############################################
+
+# Get event with the given slug.
+def getEvent(event_slug):
+    return Event.objects.get(event_slug=event_slug)
+
+# Get a list of all matches associated with the given event.
+def getMatches(event):
+    return [m for m in Match.objects.filter(event=event)]

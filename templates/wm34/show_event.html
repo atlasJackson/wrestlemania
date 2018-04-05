@@ -1,0 +1,35 @@
+{% extends 'wm34/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+    {{ event.name }} Event Details
+{% endblock %}
+ 
+{% block body_block %}
+    <div>
+        <h1>{{ event.name }}.</h1>
+        <a href="{% url 'event_scorecard' event.event_slug %}">Scorecard</a><br /><br />
+    </div>
+    <div>
+        <h2>Matches</h2>
+        <ul>
+            {% for match in matches %}
+            <li>
+                {% if match.name %}
+                    {{ match.name }} <br />
+                {% endif %}
+                {% if match.team %}
+                    {% for team in match.team.all %} 
+                        {{ team.name }}
+                    {% endfor %}
+                {% else %}
+                    {% for wrestler in match.wrestler.all %} 
+                        {{ wrestler.name }}
+                    {% endfor %}
+                {% endif %} <br /><br />
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
+

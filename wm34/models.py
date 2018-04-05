@@ -19,12 +19,17 @@ class UserProfile(models.Model):
 class Event(models.Model):    
     name = models.CharField(max_length=128)
     date = models.DateTimeField(default=None)
+    event_slug = models.SlugField()
 
     user = models.ManyToManyField(User, through="UserEvent")
 
     # Override the __str__() method.
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        self.event_slug = slugify(self.name)
+        super(Event, self).save(*args, **kwargs)
 
 
 class Team (models.Model):
