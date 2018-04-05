@@ -26,17 +26,29 @@ class Event(models.Model):
     def __str__(self):
         return self.name
 
-class Wrestler(models.Model):
+
+class Team (models.Model):
     name = models.CharField(unique=True, max_length=128)
-    #match = models.ManyToManyField(Match)
 
     # Override the __str__() method.
     def __str__(self):
         return self.name
 
+
+class Wrestler(models.Model):
+    name = models.CharField(unique=True, max_length=128)
+    team = models.ManyToManyField(Team, blank=True)
+
+    # Override the __str__() method.
+    def __str__(self):
+        return self.name
+
+
 class Match(models.Model):
 
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
+
+    name = models.CharField(max_length=128, blank=True)
 
     # Game types take the following values in order to reference integer field:
     SINGLE = 1
@@ -61,6 +73,7 @@ class Match(models.Model):
     match_type = models.IntegerField(choices=MATCH_CHOICES, default=SINGLE)
 
     wrestler = models.ManyToManyField(Wrestler)
+    team = models.ManyToManyField(Team, blank=True)
 
 
     class Meta:
@@ -68,8 +81,14 @@ class Match(models.Model):
 
     # Override the __str__() method.
     def __str__(self):
-        wrestlers = ", ".join(str(w) for w in self.wrestler.all())
-        return "%s: %s" % (self.event.name, wrestlers)
+        if self.name:
+            return "%s: %s" % (str(self.event), self.name)
+        elif self.team.all():
+            teams = " vs. ".join(str(t) for t in self.team.all())
+            return "%s: %s" % (str(self.event), teams)
+        else:
+            wrestlers = " vs. ".join(str(w) for w in self.wrestler.all())
+            return "%s: %s" % (str(self.event), wrestlers)
 
 
 class UserEvent(models.Model):
