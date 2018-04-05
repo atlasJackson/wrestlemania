@@ -233,7 +233,7 @@ def test(match_count, wrestler_count, team_count, user_count):
     t = Team.objects.count() == team_count
     u = User.objects.count() == user_count
 
-    if m and w and t:
+    if m and w and t and u:
         print("Data entered successfully to the database")
     else:
         print("Something went wrong!")
