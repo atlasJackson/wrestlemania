@@ -13,6 +13,7 @@ application = get_wsgi_application()
 
 # Import all models
 from wm34.models import *
+from django.contrib.auth.models import User
 
 
 def populate():
@@ -97,12 +98,54 @@ def populate():
         },
 
         "users": {
-            ####
+            "deek": {
+                "password": "password",
+                "email": "deek@test.com",
+                "first_name": "Derek",
+                "last_name": "Russell"
+            },
+            "rusty": {
+                "password": "password",
+                "email": "rusty@test.com",
+                "first_name": "Graeme",
+                "last_name": "Russell"
+            },
+            "gordon": {
+                "password": "password",
+                "email": "gordon@test.com",
+                "first_name": "Gordon",
+                "last_name": "Daffurn"
+            },
+            "malky": {
+                "password":"password",
+                "email": "malky@test.com",
+                "first_name": "Malcolm",
+                "last_name": "Macvicar"
+            },
+            "innes": {
+                "password": "password",
+                "email": "innes@test.com",
+                "first_name": "Murray",
+                "last_name": "Innes"
+            },
+            "iain": {
+                "password": "password",
+                "email": "iain@test.com",
+                "first_name": "Iain",
+                "last_name": "Jack"
+            },
+            "lyle": {
+                "password": "password",
+                "email": "lyle@test.com",
+                "first_name": "Lyle",
+                "last_name": "Simpson"
+            }
         }
     }
 
     # Test variables for comparing against the number of database results for each model after the populate script has run
     MATCH_COUNT = len(data["matches"])
+    USER_COUNT = len(data["users"])
     WRESTLER_COUNT = 0
     TEAM_COUNT = 0
     for keys in data["matches"].values():
@@ -135,8 +178,11 @@ def populate():
             except KeyError:
                 pass
     
+    # Add users
+    for username, user in data["users"].items():
+        u = add_user(username, user["password"], user["email"], user["first_name"], user["last_name"])
     # Basic test that checks the correct number of entities have been entered to the DB
-    test(MATCH_COUNT, WRESTLER_COUNT, TEAM_COUNT)       
+    test(MATCH_COUNT, WRESTLER_COUNT, TEAM_COUNT, USER_COUNT)       
 
 
 # Database insert functions
@@ -169,10 +215,23 @@ def link_wrestler_and_match(wrestler,match):
 def link_team_and_match(team,match):
     match.team.add(team)
 
-def test(match_count, wrestler_count, team_count):
+def add_user(username,password,email,first_name,last_name):
+    u = User.objects.get_or_create(username=username)[0]
+    u.set_password(password)
+    u.email = email
+    u.first_name = first_name
+    u.last_name = last_name
+    if u.username in ["gordon", "lyle"]:
+        u.is_staff = True
+        u.is_superuser = True
+    u.save()
+    return u
+
+def test(match_count, wrestler_count, team_count, user_count):
     m = Match.objects.count() == match_count
     w = Wrestler.objects.count() == wrestler_count
     t = Team.objects.count() == team_count
+    u = User.objects.count() == user_count
 
     if m and w and t:
         print("Data entered successfully to the database")
