@@ -22,6 +22,17 @@ class Event(models.Model):
 
     user = models.ManyToManyField(User, through="UserEvent")
 
+    # Override the __str__() method.
+    def __str__(self):
+        return self.name
+
+class Wrestler(models.Model):
+    name = models.CharField(unique=True, max_length=128)
+    #match = models.ManyToManyField(Match)
+
+    # Override the __str__() method.
+    def __str__(self):
+        return self.name
 
 class Match(models.Model):
 
@@ -49,10 +60,16 @@ class Match(models.Model):
     )
     match_type = models.IntegerField(choices=MATCH_CHOICES, default=SINGLE)
 
+    wrestler = models.ManyToManyField(Wrestler)
 
-class Wrestler(models.Model):
-    name = models.CharField(max_length=128)
-    match = models.ManyToManyField(Match)
+
+    class Meta:
+        verbose_name_plural = "Matches"
+
+    # Override the __str__() method.
+    def __str__(self):
+        wrestlers = ", ".join(str(w) for w in self.wrestler.all())
+        return "%s: %s" % (self.event.name, wrestlers)
 
 
 class UserEvent(models.Model):
@@ -60,10 +77,16 @@ class UserEvent(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     points = models.IntegerField(default=0)
 
+    class Meta:
+        verbose_name_plural = "User Event [Join]"
+
 
 class UserMatchAnswers(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     match = models.ForeignKey(Match, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural = "User Match Answers"
 
     ###########################################################
     ### FOR ALL MATCH TYPES

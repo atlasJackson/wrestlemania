@@ -99,17 +99,17 @@ def insert_event(name, date):
     e.save()
     return e
 
+def insert_wrestler(name):
+    wrestler = Wrestler.objects.get_or_create(name=name)[0]
+    return wrestler
+
 def insert_match(event, match_type):
     match = Match(event=event, match_type=match_type)
     match.save()
     return match
 
-def insert_wrestler(name):
-    wrestler = Wrestler.objects.get_or_create(name=name)[0]
-    return wrestler
-
 def link_wrestler_and_match(wrestler,match):
-    wrestler.match.add(match)
+    match.wrestler.add(wrestler)
 
 if __name__ == '__main__':
     populate()
