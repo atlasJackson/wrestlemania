@@ -6,10 +6,15 @@
 {% endblock %}
 
 {% block body_block %}
-    <h1>Events</h1>
-    <ul>
-        {% for event in events %}
-            <li><a href="{% url 'show_event' event.event_slug %}">{{ event.name }}</a></li>
-        {% endfor %}
-    </ul>  
+    <div class="col-8 offset-2">
+        <h1 class="text-center mt-3">Events</h1>
+        <hr/>
+        <ul>
+            {% for event in events %}
+                <li class="wm34-list">
+                    <a href="{% url 'show_event' event.event_slug %}">{{ event.name }}</a>
+                </li>
+            {% endfor %}
+        </ul>  
+    </div>
 {% endblock %}

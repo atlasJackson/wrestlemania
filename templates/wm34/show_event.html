@@ -6,30 +6,33 @@
 {% endblock %}
  
 {% block body_block %}
-    <div>
-        <h1>{{ event.name }}.</h1>
-        <a href="{% url 'event_scorecard' event.event_slug %}">Scorecard</a><br /><br />
-    </div>
-    <div>
-        <h2>Matches</h2>
-        <ul>
-            {% for match in matches %}
-            <li>
-                {% if match.name %}
-                    {{ match.name }} <br />
-                {% endif %}
-                {% if match.team %}
-                    {% for team in match.team.all %} 
-                        {{ team.name }}
-                    {% endfor %}
-                {% else %}
-                    {% for wrestler in match.wrestler.all %} 
-                        {{ wrestler.name }}
-                    {% endfor %}
-                {% endif %} <br /><br />
-            </li>
-            {% endfor %}
-        </ul>
+    <div class="col-10 offset-1">
+        <div>
+            <h1 class="text-center mt-3">{{ event.name }}.</h1>
+            <hr/>
+            <a href="{% url 'event_scorecard' event.event_slug %}">Scorecard</a><br /><br />
+        </div>
+        <div>
+            <h2>Matches</h2>
+            <ul>
+                {% for match in matches %}
+                <li class="wm34-list">
+                    {% if match.name %}
+                        {{ match.name }} <br />
+                    {% endif %}
+                    {% if match.team %}
+                        {% for team in match.team.all %} 
+                            {{ team.name }}
+                        {% endfor %}
+                    {% else %}
+                        {% for wrestler in match.wrestler.all %} 
+                            {{ wrestler.name }}
+                        {% endfor %}
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
 {% endblock %}
 
