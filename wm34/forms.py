@@ -36,5 +36,9 @@ class UserMatchAnswersForm(forms.ModelForm):
         match = kwargs.pop('match', None)
         super(UserMatchAnswersForm,self).__init__(*args, **kwargs)
         if match:
-            self.fields['winner'] = forms.ChoiceField(
-                choices=[ (w.id, str(w)) for w in match.wrestler.all()])
+            if match.team.all():
+                self.fields['winner'] = forms.ChoiceField(
+                    choices=[(t.id, str(t)) for t in match.team.all()])
+            else:
+                self.fields['winner'] = forms.ChoiceField(
+                    choices=[ (w.id, str(w)) for w in match.wrestler.all()])

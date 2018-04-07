@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -169,18 +169,21 @@ def event_scorecard(request, event):
 
 def match_scorecard(request, event, id):
     # Retrieve models:
-    event = getEvent(event)
-    match = Match.objects.get(id=id)
-
-    # Render the form, pass in the match
-    scorecard = UserMatchAnswersForm(match=match)
-    
-    context = {
-        'event': event,
-        'match': match,
-        'scorecard': scorecard 
-    }
-    return render(request, "wm34/match_scorecard.html", context)
+    if request.method == 'GET':
+        try:
+            event = getEvent(event)
+            match = get_object_or_404(Match, id=id)
+            # Render the form, pass in the match, set the context
+            scorecard = UserMatchAnswersForm(match=match)
+            context_dict = {
+                'event': event,
+                'match': match,
+                'scorecard': scorecard 
+            }
+        except (Event.DoesNotExist, Match.DoesNotExist) as e:
+            context_dict = {'event': None, 'match': None}
+            print(e)
+    return render(request, "wm34/match_scorecard.html", context_dict)
 
 
 
@@ -195,3 +198,7 @@ def getEvent(event_slug):
 # Get a list of all matches associated with the given event.
 def getMatches(event):
     return [m for m in Match.objects.filter(event=event)]
+
+# Could possibly be of use in a helpers.py file
+def isTagMatch(match):
+    return match.match_type in [Match.TAG, Match.TRIPLE_TAG]
