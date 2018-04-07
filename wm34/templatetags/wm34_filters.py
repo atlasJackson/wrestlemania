@@ -1,5 +1,21 @@
 from django import template
+
 register = template.Library()
+
+# https://stackoverflow.com/questions/10906614/django-join-list-of-objects-in-templates-on-specific-attribute
+@register.filter
+def join_teams(match):
+    teams = " vs. ".join(str(t) for t in match.team.all())
+    return "%s" % (teams)
+
+@register.filter
+def join_wrestlers(match):
+    wrestlers = " vs. ".join(str(w) for w in match.wrestler.all())
+    return "%s" % (wrestlers)
+
+###########################################################################
+# TAKEN FROM WAD2 FOR INSPIRATION!
+###########################################################################
 
 # Add a css class to a field.
 @register.filter(name='addCss')
@@ -67,3 +83,4 @@ def ratingAsRange(player, label):
     for i in range(0, int(rating)):
         string += " "
     return string
+

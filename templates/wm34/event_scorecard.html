@@ -1,5 +1,6 @@
 {% extends 'wm34/base.html' %}
 {% load staticfiles %}
+{% load wm34_filters %}
 <!--
      Template to create a new game.
 -->
@@ -15,19 +16,15 @@
             {% if match.name %}
                 {{ match.name }} <br />
             {% endif %}
-            {% if match.team %}
-                {% for team in match.team.all %} 
-                    {{ team.name }}
-                {% endfor %}
+            {% if match.team.all %}
+                {{ match|join_teams }}
             {% else %}
-                {% for wrestler in match.wrestler.all %} 
-                    {{ wrestler.name }}
-                {% endfor %}
-            {% endif %} <br /><br />
+                {{ match|join_wrestlers }}
+            {% endif %} <br />
 
             {% for field in scorecard %}
                 {{ field.label }} {{ field }}
-            {% endfor %}
+            {% endfor %} <br /><br />
 
         {% endfor %}
         <input class="btn btn-lg btn-primary btn-block" id="create-game" type="submit" name="submit" value="Create Game" />

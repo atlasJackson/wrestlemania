@@ -1,5 +1,6 @@
 {% extends 'wm34/base.html' %}
 {% load staticfiles %}
+{% load wm34_filters %}
 
 {% block title_block %}
     {{ event.name }} Event Details
@@ -20,14 +21,10 @@
                     {% if match.name %}
                         {{ match.name }} <br />
                     {% endif %}
-                    {% if match.team %}
-                        {% for team in match.team.all %} 
-                            {{ team.name }}
-                        {% endfor %}
+                    {% if match.team.all %}
+                        {{ match|join_teams }}
                     {% else %}
-                        {% for wrestler in match.wrestler.all %} 
-                            {{ wrestler.name }}
-                        {% endfor %}
+                        {{ match|join_wrestlers }}
                     {% endif %}
                 </li>
                 {% endfor %}
