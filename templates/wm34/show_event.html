@@ -11,7 +11,11 @@
         <div>
             <h1 class="text-center mt-3">{{ event.name }}.</h1>
             <hr/>
-            <a href="{% url 'event_scorecard' event.event_slug %}">Scorecard</a><br /><br />
+            {% if user.is_authenticated %}
+                <a href="{% url 'event_scorecard' event.event_slug %}">Scorecard</a><br /><br />
+            {% else %}
+                <p><a href="{% url 'login' %}">Login</a> to access the scorecard.</p>
+            {% endif %}
         </div>
         <div>
             <h2>Matches</h2>
