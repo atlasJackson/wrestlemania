@@ -11,5 +11,6 @@ urlpatterns = [
 
     path('events/<slug:event>/', views.show_event , name='show_event'),
     path('events/<slug:event>/scorecard', views.event_scorecard , name='event_scorecard'),
+    path('events/<slug:event>/scorecard/<int:id>', views.match_scorecard , name='match_scorecard'),
 
 ]

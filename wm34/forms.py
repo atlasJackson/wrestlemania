@@ -28,8 +28,13 @@ class EditUserForm(forms.ModelForm):
 
 
 class UserMatchAnswersForm(forms.ModelForm):
-    winner = forms.ChoiceField(choices=Match.MATCH_CHOICES, label="Match Winner")
-
     class Meta:
         model=UserMatchAnswers
         fields = ('winner',)
+
+    def __init__(self, *args, **kwargs):
+        match = kwargs.pop('match', None)
+        super(UserMatchAnswersForm,self).__init__(*args, **kwargs)
+        if match:
+            self.fields['winner'] = forms.ChoiceField(
+                choices=[ (w.id, str(w)) for w in match.wrestler.all()])

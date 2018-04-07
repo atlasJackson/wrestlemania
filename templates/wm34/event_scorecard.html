@@ -10,23 +10,36 @@
 {% endblock %}
 
 {% block body_block %}
-    <form method="post" action="{% url 'event_scorecard' event.event_slug %}">
-        {% csrf_token %}
-        {% for match in matches %}
-            {% if match.name %}
-                {{ match.name }} <br />
-            {% endif %}
-            {% if match.team.all %}
-                {{ match|join_teams }}
-            {% else %}
-                {{ match|join_wrestlers }}
-            {% endif %} <br />
-
-            {% for field in scorecard %}
-                {{ field.label }} {{ field }}
-            {% endfor %} <br /><br />
-
-        {% endfor %}
-        <input class="btn btn-lg btn-primary btn-block" id="create-game" type="submit" name="submit" value="Create Game" />
+    {% comment %} <form method="post" action="{% url 'event_scorecard' event.event_slug %}">
+        {% csrf_token %} {% endcomment %}
+        <div class="col-10 offset-1 my-2">
+            <h2 class="mb-2">Card</h2>
+            <hr/>
+        <ul class="list-group">
+            {% for match in matches %}
+                {% if match.name %}
+                <li class="list-group-item">
+                    <a href="{% url 'match_scorecard' event.event_slug match.id %}">{{ match.name }}</a><br />
+                </li>
+                {% elif match.team.all %}
+                 <li class="list-group-item">
+                    <a href="{% url 'match_scorecard' event.event_slug match.id %}">{{ match|join_teams }}</a>
+                 </li>
+                {% else %}
+                <li class="list-group-item">
+                    <a href="{% url 'match_scorecard' event.event_slug match.id %}">{{ match|join_wrestlers }}</a>
+                </li>
+                {% endif %} <br />
+    
+                {% comment %} {% for field in scorecard %}
+                    {{ field.label }} {{ field }}
+                {% endfor %} <br /><br /> {% endcomment %}
+    
+            {% endfor %}            
+        </ul>
+        {% comment %}
+            <input class="btn btn-lg btn-primary btn-block" id="create-game" type="submit" name="submit" value="Create Game" />
     </form>
+    {% endcomment %}
+    </div>
 {% endblock %}

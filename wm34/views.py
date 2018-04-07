@@ -167,6 +167,23 @@ def event_scorecard(request, event):
     return render(request, 'wm34/event_scorecard.html', context=context_dict)
 
 
+def match_scorecard(request, event, id):
+    # Retrieve models:
+    event = getEvent(event)
+    match = Match.objects.get(id=id)
+
+    # Render the form, pass in the match
+    scorecard = UserMatchAnswersForm(match=match)
+    
+    context = {
+        'event': event,
+        'match': match,
+        'scorecard': scorecard 
+    }
+    return render(request, "wm34/match_scorecard.html", context)
+
+
+
 ###############################################
 # Helper functions
 ###############################################

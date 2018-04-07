@@ -1,0 +1,25 @@
+{% extends 'wm34/base.html' %}
+{% load staticfiles %}
+{% load wm34_filters %}
+
+{% block title_block %}
+    {{ request.user }}'s {{ event.name }} Scorecard 
+{% endblock %}
+
+{% block body_block %}
+    <form method="post" action="{% url 'match_scorecard' event.event_slug match.id %}">
+        {% csrf_token %}
+        {% if match.name %}
+            {{ match.name }}<br />
+        {% endif %}
+        {% if match.team.all %}
+            {{ match|join_teams }}
+        {% else %}
+            {{ match|join_wrestlers }}
+        {% endif %} <br />
+
+        {% for field in scorecard %}
+            {{ field.label }} {{ field }}
+        {% endfor %} <br /><br />
+    </form>
+{% endblock %}
