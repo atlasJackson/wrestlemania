@@ -3,9 +3,9 @@ from django.contrib.auth.models import User
 from wm34.models import UserProfile, UserMatchAnswers
 from wm34.models import Match, Wrestler
 
-###################################
+###############################################
 ### USER FORMS
-###################################
+###############################################
 
 class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput())
@@ -27,41 +27,49 @@ class EditUserForm(forms.ModelForm):
         fields = ('first_name', 'last_name', 'email')
 
 
-# Form for handling match winner
-class UserMatchWinnerForm(forms.ModelForm):
-
-    class Meta:
-        model=UserMatchAnswers
-        fields = ('winner',)
-
-    def __init__(self, *args, **kwargs):
-        match = kwargs.pop('match', None)
-        super(UserMatchWinnerForm,self).__init__(*args, **kwargs)
-        if match:
-            if match.team.all():
-                self.fields['winner'] = forms.ChoiceField(
-                    choices=[(t.id, str(t)) for t in match.team.all()])
-            else:
-                self.fields['winner'] = forms.ChoiceField(
-                    choices=[ (w.id, str(w)) for w in match.wrestler.all()])
-
-
-# Form corresponding to the answers for all match types (10 points)
-def UserMatchBasicForm(include_list=[], *args, **kwargs):
-    class MyUserMatchBasicForm(forms.ModelForm):
-        
-        class Meta:
-            model=UserMatchAnswers
-            fields = include_list
-
-    return MyUserMatchBasicForm()
+###############################################
+### USER MATCH FORMS
+###############################################
 
 # Form corresponding to the answers for specific match types (5 points)
-def UserMatchSpecificForm(include_list=[], *args, **kwargs):
-    class MyUserMatchSpecificForm(forms.ModelForm):
+def UserMatchForm(match, field_list, *args, **kwargs):
+    class UserMatchForm(forms.ModelForm):
         
         class Meta:
             model=UserMatchAnswers
-            fields = include_list
-        
-    return MyUserMatchSpecificForm()
+            fields = field_list
+
+        def __init__(self, *args, **kwargs):
+            super(UserMatchForm,self).__init__(*args, **kwargs)
+            if match:
+                # The fields for which we need to generate the choioces from competitors in the match.
+                fields_with_wrestler_choices = ['winner', 'who_pins', 'who_pinned', 'first_out', 
+                                                'final_four_one', 'final_four_two', 'final_four_three', 'final_four_four']
+                # Populate choices of above fields if they're included.
+                for field in field_list:
+                    if field in fields_with_wrestler_choices:
+                        get_competitors_for_field(self, match, field)
+
+    return UserMatchForm()
+
+
+###############################################
+# Helper functions
+###############################################
+
+def get_competitors_for_field(this_form, match, field):
+    # Specific check for field 'winner'.
+    if field == 'winner':
+        if match.team.all():
+            this_form.fields[field] = forms.ChoiceField(
+                choices=[(t.id, str(t)) for t in match.team.all()])
+        else:
+            this_form.fields[field] = forms.ChoiceField(
+                choices=[ (w.id, str(w)) for w in match.wrestler.all()])
+
+    # Every other field requires choices from a list of individual competitors.
+    else:
+        this_form.fields[field] = forms.ChoiceField(
+                choices=[ (w.id, str(w)) for w in match.wrestler.all()])
+
+

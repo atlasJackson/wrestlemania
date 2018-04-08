@@ -166,14 +166,25 @@ class UserMatchAnswers(models.Model):
     final_four_three = models.CharField(max_length=128) # 1 point
     final_four_four = models.CharField(max_length=128) # 1 point
 
+    ###########################################################
     # Association between match types and included fields for form.
+
+    match_with_method = [Match.SINGLE, Match.TAG, Match.TRIPLE, Match.FOUR, Match.TRIPLE_TAG]
+
+    all_match_fields = ['winner', 'duration', 'interference']
+
     match_form_fields = {
-        Match.SINGLE: ['finishers', 'table_used', 'injury', 'ref_comatose_or_distracted'],
-        Match.TAG: ['who_pins', 'who_pinned', 'heel_turn'],
-        Match.TRIPLE: ['who_pins', 'who_pinned', 'heel_turn'],
-        Match.FOUR: ['who_pins', 'who_pinned', 'heel_turn'],
-        Match.TRIPLE_TAG: ['who_pins', 'who_pinned', 'heel_turn'],
-        Match.ROYALE: ['first_out', 'final_four_one', 'final_four_two', 'final_four_three', 'final_four_four'],
-        Match.LADDER: [],
-        Match.TABLE: [],
+        Match.SINGLE: all_match_fields + ['finishers', 'table_used', 'injury', 'ref_comatose_or_distracted'],
+        Match.TAG: all_match_fields + ['who_pins', 'who_pinned', 'heel_turn'],
+        Match.TRIPLE: all_match_fields + ['who_pins', 'who_pinned', 'heel_turn'],
+        Match.FOUR: all_match_fields + ['who_pins', 'who_pinned', 'heel_turn'],
+        Match.TRIPLE_TAG: all_match_fields + ['who_pins', 'who_pinned', 'heel_turn'],
+        Match.ROYALE: all_match_fields + ['first_out', 'final_four_one', 'final_four_two', 'final_four_three', 'final_four_four'],
+        Match.LADDER: all_match_fields + [],
+        Match.TABLE: all_match_fields + [],
     }
+
+    # Helper method to add victory method to applicable matches.
+    #for match_type, fields in match_form_fields.items():
+    #    if match_type in match_with_method:
+    #        fields.append('method')

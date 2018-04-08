@@ -7,7 +7,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
 
 from wm34.models import User, Event, Match, UserMatchAnswers
-from wm34.forms import UserForm, UserProfileForm, UserMatchWinnerForm, UserMatchBasicForm, UserMatchSpecificForm
+from wm34.forms import UserForm, UserProfileForm, UserMatchForm
 
 def index(request):
     events = Event.objects.order_by('event_slug')[:10]
@@ -157,27 +157,14 @@ def match_scorecard(request, event, id):
             match = get_object_or_404(Match, id=id)
             match_type = match.match_type 
             
-            # All-Match-Types form - exclude form fields based on match type.
-            # Future: add match types to lists and check which list match is in.
-            basic_include_list = ['duration', 'interference']
-            if match_type > 5:
-                basic_include_list.append('gimmick')
-            else:
-                basic_include_list.append('method')
-
-            specific_include_list = UserMatchAnswers.match_form_fields[match_type]
-
             # Render the form, pass in the match, set the context
-            card_winner = UserMatchWinnerForm(match=match)
-            basic_scorecard = UserMatchBasicForm(include_list=basic_include_list, match=match)
-            specific_scorecard = UserMatchSpecificForm(include_list=specific_include_list, match=match)
+            field_list = UserMatchAnswers.match_form_fields[match_type]
+            scorecard = UserMatchForm(match=match, field_list=field_list)
             
             context_dict = {
                 'event': event,
                 'match': match,
-                'card_winner': card_winner,
-                'basic_scorecard': basic_scorecard,
-                'specific_scorecard': specific_scorecard
+                'scorecard': scorecard
             }
         
         except (Event.DoesNotExist, Match.DoesNotExist) as e:

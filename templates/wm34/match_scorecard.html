@@ -18,17 +18,9 @@
         {% else %}
             {{ match|join_wrestlers }}
         {% endif %} <br /><br />
-
-        <!-- Basic match scorecard = 10 points -->
-        {% for field in card_winner %}
-            {{ field.label }} {{ field }} <br />
-        {% endfor %}
-        {% for field in basic_scorecard %}
-            {{ field.label }} {{ field }} <br />
-        {% endfor %} <br /><br />
-
-        {% for field in specific_scorecard %}
-            {{ field.label }} {{ field }} <br />
+        
+        {% for field in scorecard %}
+            {{ field.label }} {{ field }} <br /><br />
         {% endfor %} <br /><br />
 
         <input class="btn btn-lg btn-primary btn-block" type="submit" name="submit" value="Submit Match Results" />
