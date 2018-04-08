@@ -32,7 +32,7 @@ class EditUserForm(forms.ModelForm):
 ###############################################
 
 # Form corresponding to the answers for specific match types (5 points)
-def UserMatchForm(match, field_list, *args, **kwargs):
+def UserMatchForm(*args, match, field_list, **kwargs):
     class UserMatchForm(forms.ModelForm):
         
         class Meta:

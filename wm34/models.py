@@ -185,6 +185,8 @@ class UserMatchAnswers(models.Model):
     }
 
     # Helper method to add victory method to applicable matches.
-    #for match_type, fields in match_form_fields.items():
-    #    if match_type in match_with_method:
-    #        fields.append('method')
+    for match_type, fields in match_form_fields.items():
+        if match_type in match_with_method:
+            fields.append('method')
+        else:
+            fields.append('gimmick')

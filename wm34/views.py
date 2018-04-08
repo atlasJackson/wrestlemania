@@ -144,11 +144,38 @@ def event_scorecard(request, event):
 
 def match_scorecard(request, event, id):
 
+    if request.method == 'POST':
+        try:
+            event = getEvent(event)
+            match = get_object_or_404(Match, id=id)
+            match_type = match.match_type 
 
+            # Render the form, pass in the match, set the context
+            field_list = UserMatchAnswers.match_form_fields[match_type]
+            match_form = UserMatchForm(request.POST, match=match, field_list=field_list)
 
+            print (match_form)
 
+            if match_form.is_valid():
 
+                user_answers = match_form.save(commit=False)
+                user_answers.user = request.user
+                user_answers.match = get_object_or_404(Match, id=id)
+                user_answers.event = getEvent(event)
 
+                user_answers.save()
+
+                # Direct the user to the view of the newly created game.
+                return HttpResponseRedirect(reverse('index'))
+            else:
+                print (str(request.user) + " is a jobby.")
+                # Print problems to the terminal.
+                print(match_form.errors)
+                return HttpResponseRedirect(reverse('index'))
+
+        except (Event.DoesNotExist, Match.DoesNotExist) as e:
+            context_dict = {'event': None, 'match': None}
+            print(e)
 
     # Retrieve models:
     if request.method == 'GET':
@@ -164,7 +191,7 @@ def match_scorecard(request, event, id):
             context_dict = {
                 'event': event,
                 'match': match,
-                'scorecard': scorecard
+                'scorecard': scorecard,
             }
         
         except (Event.DoesNotExist, Match.DoesNotExist) as e:
