@@ -7,6 +7,7 @@
 {% endblock %}
 
 {% block body_block %}
+<div class="col-10 offset-1 my-2">
     <form method="post" action="{% url 'match_scorecard' event.event_slug match.id %}">
         {% csrf_token %}
         {% if match.name %}
@@ -16,10 +17,21 @@
             {{ match|join_teams }}
         {% else %}
             {{ match|join_wrestlers }}
-        {% endif %} <br />
+        {% endif %} <br /><br />
 
-        {% for field in scorecard %}
-            {{ field.label }} {{ field }}
+        <!-- Basic match scorecard = 10 points -->
+        {% for field in card_winner %}
+            {{ field.label }} {{ field }} <br />
+        {% endfor %}
+        {% for field in basic_scorecard %}
+            {{ field.label }} {{ field }} <br />
         {% endfor %} <br /><br />
+
+        {% for field in specific_scorecard %}
+            {{ field.label }} {{ field }} <br />
+        {% endfor %} <br /><br />
+
+        <input class="btn btn-lg btn-primary btn-block" type="submit" name="submit" value="Submit Match Results" />
     </form>
+</div>
 {% endblock %}

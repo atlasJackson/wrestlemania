@@ -108,10 +108,11 @@ class UserEvent(models.Model):
 class UserMatchAnswers(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     match = models.ForeignKey(Match, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name_plural = "User Match Answers"
-
+        
     ###########################################################
     ### FOR ALL MATCH TYPES
     # Winner of the match - 5 points.
@@ -151,7 +152,7 @@ class UserMatchAnswers(models.Model):
     finishers = models.IntegerField(default=0) # 2 points
     table_used = models.BooleanField(default=False) # 1 points
     injury = models.BooleanField(default=False) # 1 points
-    ref_comatose = models.BooleanField(default=False) # 1 points
+    ref_comatose_or_distracted = models.BooleanField(default=False) # 1 points
 
     ## Multi-man/tag-team matches.
     who_pins = models.CharField(max_length=128) # 2 points
@@ -164,3 +165,15 @@ class UserMatchAnswers(models.Model):
     final_four_two = models.CharField(max_length=128) # 1 point
     final_four_three = models.CharField(max_length=128) # 1 point
     final_four_four = models.CharField(max_length=128) # 1 point
+
+    # Association between match types and included fields for form.
+    match_form_fields = {
+        Match.SINGLE: ['finishers', 'table_used', 'injury', 'ref_comatose_or_distracted'],
+        Match.TAG: ['who_pins', 'who_pinned', 'heel_turn'],
+        Match.TRIPLE: ['who_pins', 'who_pinned', 'heel_turn'],
+        Match.FOUR: ['who_pins', 'who_pinned', 'heel_turn'],
+        Match.TRIPLE_TAG: ['who_pins', 'who_pinned', 'heel_turn'],
+        Match.ROYALE: ['first_out', 'final_four_one', 'final_four_two', 'final_four_three', 'final_four_four'],
+        Match.LADDER: [],
+        Match.TABLE: [],
+    }
